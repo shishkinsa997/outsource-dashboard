@@ -8,6 +8,8 @@ const tableModule = createTableModule({
   getCurrentPeriodData,
   getEmployeeMetrics,
   getProjectMetrics,
+  saveData,
+  render: () => render(),
 });
 
 function render() {
