@@ -1,5 +1,7 @@
 import { dom, state } from "./state/appState.js";
 import { loadData, saveData } from "./services/storageService.js";
+import { closePanels  } from "./modules/ui.js";
+
 
 function render() {
   dom.projectsContent.classList.toggle("hidden", state.activeTab !== "projects");
@@ -53,9 +55,11 @@ function initEvents() {
   });
   dom.cancelEmployeeBtn.addEventListener("click", () => {
     dom.addEmployeeForm.reset();
+    closePanels();
   });
   dom.cancelProjectBtn.addEventListener("click", () => {
     dom.addProjectForm.reset();
+    closePanels();
   });
 
 }
