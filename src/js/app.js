@@ -1,10 +1,13 @@
 import { dom, state } from "./state/appState.js";
+import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics } from "./services/metricsService.js";
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
 import { closePanels } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
 
 const tableModule = createTableModule({
   getCurrentPeriodData,
+  getEmployeeMetrics,
+  getProjectMetrics,
 });
 
 function render() {
