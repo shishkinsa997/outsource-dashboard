@@ -1,13 +1,18 @@
 import { dom, state } from "./state/appState.js";
-import { loadData, saveData } from "./services/storageService.js";
-import { closePanels  } from "./modules/ui.js";
+import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
+import { closePanels } from "./modules/ui.js";
+import { createTableModule } from "./modules/tables.js";
 
+const tableModule = createTableModule({
+  getCurrentPeriodData,
+});
 
 function render() {
   dom.projectsContent.classList.toggle("hidden", state.activeTab !== "projects");
   dom.employeesContent.classList.toggle("hidden", state.activeTab !== "employees");
   dom.navProjects.classList.toggle("active", state.activeTab === "projects");
   dom.navEmployees.classList.toggle("active", state.activeTab === "employees");
+  tableModule.renderProjectsTable();
 }
 
 function initEvents() {
@@ -16,11 +21,13 @@ function initEvents() {
 
   dom.monthSelect.addEventListener("change", () => {
     state.currentMonth = Number(dom.monthSelect.value);
+    getCurrentPeriodData();
     saveData();
     render();
   });
   dom.yearSelect.addEventListener("change", () => {
     state.currentYear = Number(dom.yearSelect.value);
+    getCurrentPeriodData();
     saveData();
     render();
   });
@@ -61,10 +68,7 @@ function initEvents() {
     dom.addProjectForm.reset();
     closePanels();
   });
-
 }
-
-console.log(dom.addEmployeeForm);
 
 function initDashboard() {
   loadData();
