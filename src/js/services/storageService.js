@@ -22,6 +22,10 @@ function saveData() {
 function loadData() {
   state.monthlyData = deepClone(seedData);
 
+  const currentKey = toPeriodKey();
+  if (!state.monthlyData[currentKey]) {
+    state.monthlyData[currentKey] = { employees: [], projects: [] };
+  }
   saveData();
 }
 
