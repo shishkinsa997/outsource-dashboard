@@ -1,3 +1,5 @@
 import "./style.css";
+import { initDashboard } from "./js/app.js";
 
-import { state, dom } from "./js/state/appState.js";
+initDashboard();
+
