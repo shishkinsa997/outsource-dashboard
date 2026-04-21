@@ -13,6 +13,7 @@ function render() {
   dom.navProjects.classList.toggle("active", state.activeTab === "projects");
   dom.navEmployees.classList.toggle("active", state.activeTab === "employees");
   tableModule.renderProjectsTable();
+  tableModule.renderEmployeesTable();
 }
 
 function initEvents() {

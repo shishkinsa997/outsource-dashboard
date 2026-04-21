@@ -1,4 +1,5 @@
 import { dom } from "../state/appState.js";
+import { calculateAge } from "../utils/date.js";
 import { toFixed } from "../utils/format.js";
 
 function createTableModule(deps) {
@@ -10,7 +11,6 @@ function createTableModule(deps) {
     const period = getCurrentPeriodData();
     const projects = period.projects;
     dom.projectsTableBody.innerHTML = "";
-    console.log(projects)
 
     projects.forEach((project) => {
       const row = document.createElement("tr");
@@ -28,7 +28,39 @@ function createTableModule(deps) {
     });
   }
 
-  return { renderProjectsTable };
+  function renderEmployeesTable() {
+    const period = getCurrentPeriodData();
+    const employees = period.employees;
+    dom.employeesTableBody.innerHTML = "";
+
+    employees.forEach((employee) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${employee.name}</td>
+        <td>${employee.surname}</td>
+        <td>${calculateAge(employee.dob)}</td>
+        <td class="editable-position">${employee.position}</td>
+        <td class="editable-salary">${employee.salary}</td>
+        <td>${employee.salary}</td>
+        <td>
+          <button class="show-details-btn">
+            Show Assignments (${(employee.assignments || []).length})
+            <span class="capacity-indicator">${toFixed(1)}/1.5</span>
+          </button>
+        </td>
+        <td></td>
+        <td class="action-buttons">
+          <button class="availability-btn">Availability</button>
+          <button class="assign-btn">Assign</button>
+          <button class="delete-btn">Delete</button>
+        </td>
+      `;
+
+      dom.employeesTableBody.append(row);
+    });
+  }
+
+  return { renderProjectsTable, renderEmployeesTable };
 }
 
 export { createTableModule };
