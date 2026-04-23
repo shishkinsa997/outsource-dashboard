@@ -21,10 +21,29 @@ function getProjectMetrics(project, employees) {
   }
 
   const usedEffectiveCapacity = assignments.reduce((sum, item) => sum + item.effectiveCapacity, 0);
+  const capacityForRevenue = Math.max(Number(project.employeeCapacity) || 0, usedEffectiveCapacity);
+  const revenuePerEffectiveCapacity = capacityForRevenue > 0 ? project.budget / capacityForRevenue : 0;
+
+  let totalRevenue = 0;
+  let totalCost = 0;
+  assignments.forEach((item) => {
+    const revenue = revenuePerEffectiveCapacity * item.effectiveCapacity;
+    const cost = item.employee.salary * Math.max(0.5, Number(item.assignment.capacity));
+    item.revenue = revenue;
+    item.cost = cost;
+    item.profit = revenue - cost;
+    totalRevenue += revenue;
+    totalCost += cost;
+  });
 
   return {
     assignments,
     usedEffectiveCapacity,
+    capacityForRevenue,
+    revenuePerEffectiveCapacity,
+    totalRevenue,
+    totalCost,
+    estimatedIncome: totalRevenue - totalCost,
   };
 }
 
