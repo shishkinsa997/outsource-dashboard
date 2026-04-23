@@ -1,3 +1,5 @@
+import { getVacationCoefficient } from "../utils/date.js";
+
 function getEmployeeAssignment(employee, projectId) {
   return (employee.assignments || []).find((a) => a.projectId === projectId);
 }
@@ -7,7 +9,7 @@ function getProjectMetrics(project, employees) {
   for (const employee of employees) {
     const assignment = getEmployeeAssignment(employee, project.id);
     if (!assignment) continue;
-    const vacationCoefficient = 1;
+    const vacationCoefficient = getVacationCoefficient(employee);
     const effectiveCapacity =
       Number(assignment.capacity) * Number(assignment.fit) * vacationCoefficient;
     assignments.push({
