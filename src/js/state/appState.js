@@ -22,6 +22,10 @@ const state = {
   currentMonth: now.getMonth(),
   currentYear: now.getFullYear(),
   activeTab: "projects",
+  sort: {
+    projects: { key: null, direction: null },
+    employees: { key: null, direction: null },
+  },
 };
 
 const dom = {
@@ -55,6 +59,6 @@ const dom = {
   currentMonthDisplay: document.getElementById("current-month-display"),
 };
 
-console.dir(dom);
+// console.dir(dom);
 
 export { STORAGE_KEY, MONTH_NAMES, POSITIONS, WEEK_DAY_NAMES, now, state, dom };

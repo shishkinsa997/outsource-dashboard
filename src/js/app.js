@@ -1,10 +1,13 @@
 import { dom, state } from "./state/appState.js";
 import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics } from "./services/metricsService.js";
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
+import { applySort, setSort } from "./modules/sortFilter.js";
 import { closePanels } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
 
 const tableModule = createTableModule({
+  applySort: (data, type) =>
+    applySort(data, type),
   getCurrentPeriodData,
   getEmployeeMetrics,
   getProjectMetrics,
@@ -74,6 +77,15 @@ function initEvents() {
     dom.addProjectForm.reset();
     closePanels();
   });
+
+  document.querySelectorAll("th.sortable").forEach((header) => {
+    header.addEventListener("click", (event) => {
+      if (event.target.classList.contains("filter-icon")) return;
+      const tableType = header.closest("table").id === "projects-table" ? "projects" : "employees";
+      setSort(tableType, header.dataset.sort, () => render());
+    });
+  });
+
 }
 
 function initDashboard() {
