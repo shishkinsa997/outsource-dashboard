@@ -19,13 +19,14 @@ function createTableModule(deps) {
     projects.forEach((project) => {
       const metrics = getProjectMetrics(project, period.employees);
       const row = document.createElement("tr");
+      const capacityClass = metrics.usedEffectiveCapacity > project.employeeCapacity ? "over-capacity" : "";
       row.innerHTML = `
         <td>${project.companyName}</td>
         <td>${project.projectName}</td>
         <td>${formatCurrency(project.budget)}</td>
-        <td>${toFixed(metrics.usedEffectiveCapacity, 3)}/${toFixed(project.employeeCapacity, 2)}</td>
+        <td class="${capacityClass}">${toFixed(metrics.usedEffectiveCapacity, 3)}/${toFixed(project.employeeCapacity, 2)}</td>
         <td><button class="show-details-btn">Show Employees (${metrics.assignments.length})</button></td>
-        <td></td>
+        <td class="${metrics.estimatedIncome >= 0 ? "positive-income" : "negative-income"}">${formatCurrency(metrics.estimatedIncome)}</td>
         <td><button class="delete-btn">Delete</button></td>
       `;
 
