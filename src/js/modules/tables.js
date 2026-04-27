@@ -4,6 +4,7 @@ import { formatCurrency, toFixed } from "../utils/format.js";
 
 function createTableModule(deps) {
   const {
+    applyFilters,
     applySort,
     getCurrentPeriodData,
     getEmployeeMetrics,
@@ -15,7 +16,8 @@ function createTableModule(deps) {
 
   function renderProjectsTable() {
     const period = getCurrentPeriodData();
-    const projects = applySort(period.projects, "projects");
+    const filtered = applyFilters(period.projects, "projects");
+    const projects = applySort(filtered, "projects");
     dom.projectsTableBody.innerHTML = "";
 
     projects.forEach((project) => {
@@ -62,7 +64,8 @@ function createTableModule(deps) {
 
   function renderEmployeesTable() {
     const period = getCurrentPeriodData();
-    const employees = applySort(period.employees, "employees");
+    const filtered = applyFilters(period.employees, "employees");
+    const employees = applySort(filtered, "employees");
     dom.employeesTableBody.innerHTML = "";
 
     employees.forEach((employee) => {

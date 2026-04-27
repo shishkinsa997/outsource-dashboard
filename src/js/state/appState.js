@@ -26,6 +26,10 @@ const state = {
     projects: { key: null, direction: null },
     employees: { key: null, direction: null },
   },
+  filters: {
+    projects: {},
+    employees: {},
+  },
 };
 
 const dom = {
@@ -58,7 +62,5 @@ const dom = {
   seedDataTableBody: document.getElementById("seed-data-table-body"),
   currentMonthDisplay: document.getElementById("current-month-display"),
 };
-
-// console.dir(dom);
 
 export { STORAGE_KEY, MONTH_NAMES, POSITIONS, WEEK_DAY_NAMES, now, state, dom };

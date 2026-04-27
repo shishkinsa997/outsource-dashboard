@@ -1,11 +1,12 @@
 import { dom, state } from "./state/appState.js";
 import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalEstimatedIncome } from "./services/metricsService.js";
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
-import { applySort, setSort, updateSortIcons } from "./modules/sortFilter.js";
+import { applySort, applyFilters, setSort, updateSortIcons } from "./modules/sortFilter.js";
 import { closePanels } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
 
 const tableModule = createTableModule({
+  applyFilters: (data, type) => applyFilters(data, type, getCurrentPeriodData),
   applySort: (data, type) =>
     applySort(data, type),
   getCurrentPeriodData,

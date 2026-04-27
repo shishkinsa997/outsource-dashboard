@@ -26,6 +26,25 @@ function applySort(data, type) {
   return sorted;
 }
 
+function applyFilters(data, type, getCurrentPeriodData) {
+  const filters = state.filters[type];
+  if (!Object.keys(filters).length) return data;
+
+  const period = getCurrentPeriodData();
+  return data.filter((item) =>
+    Object.entries(filters).every(([key, rawValue]) => {
+      const value = String(rawValue).toLowerCase();
+      if (type === "employees" && key === "projectId") {
+        const projectNames = (item.assignments || [])
+          .map((assignment) => period.projects.find((project) => project.id === assignment.projectId)?.projectName || "")
+          .join(" ");
+        return projectNames.toLowerCase().includes(value);
+      }
+      return String(item[key] || "").toLowerCase().includes(value);
+    }),
+  );
+}
+
 function setSort(type, key, render) {
   const current = state.sort[type];
   if (current.direction === "asc") {
@@ -56,6 +75,7 @@ function updateSortIcons() {
 
 export {
   applySort,
+  applyFilters,
   setSort,
   updateSortIcons,
 };
