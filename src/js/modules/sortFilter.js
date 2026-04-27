@@ -37,7 +37,25 @@ function setSort(type, key, render) {
   render();
 }
 
+function updateSortIcons() {
+  document.querySelectorAll("th.sortable").forEach((header) => {
+    const type = header.closest("table").id === "projects-table" ? "projects" : "employees";
+    const sort = state.sort[type];
+    const icon = header.querySelector(".sort-icon");
+    header.classList.remove("sorted");
+    if (!icon) return;
+    if (sort.key === header.dataset.sort) {
+      header.classList.add("sorted");
+      icon.textContent = sort.direction === "asc" ? "↑" : "↓";
+    } else {
+      icon.textContent = "⇅";
+    }
+  });
+}
+
+
 export {
   applySort,
   setSort,
+  updateSortIcons,
 };
