@@ -54,4 +54,15 @@ function getEmployeeMetrics(employee) {
   return { usedCapacity };
 }
 
-export { getEmployeeAssignment, getProjectMetrics, getEmployeeMetrics };
+function getTotalEstimatedIncome(projects, employees) {
+  const projectsTotal = projects.reduce(
+    (sum, project) => sum + getProjectMetrics(project, employees).estimatedIncome,
+    0,
+  );
+  const benchPayments = employees
+    .filter((employee) => (employee.assignments || []).length === 0)
+    .reduce((sum, employee) => sum + employee.salary * 0.5, 0);
+  return projectsTotal - benchPayments;
+}
+
+export { getEmployeeAssignment, getProjectMetrics, getEmployeeMetrics, getTotalEstimatedIncome };

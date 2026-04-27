@@ -1,5 +1,5 @@
 import { dom, state } from "./state/appState.js";
-import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics } from "./services/metricsService.js";
+import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalEstimatedIncome } from "./services/metricsService.js";
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
 import { applySort, setSort } from "./modules/sortFilter.js";
 import { closePanels } from "./modules/ui.js";
@@ -11,6 +11,7 @@ const tableModule = createTableModule({
   getCurrentPeriodData,
   getEmployeeMetrics,
   getProjectMetrics,
+  getTotalEstimatedIncome,
   saveData,
   render: () => render(),
 });

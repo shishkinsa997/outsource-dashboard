@@ -8,6 +8,7 @@ function createTableModule(deps) {
     getCurrentPeriodData,
     getEmployeeMetrics,
     getProjectMetrics,
+    getTotalEstimatedIncome,
     saveData,
     render,
   } = deps;
@@ -44,6 +45,19 @@ function createTableModule(deps) {
 
       dom.projectsTableBody.append(row);
     });
+
+    let totalBlock = document.getElementById("total-income-info");
+    if (!totalBlock) {
+      totalBlock = document.createElement("div");
+      totalBlock.id = "total-income-info";
+      totalBlock.className = "total-income-info";
+      dom.projectsContent.append(totalBlock);
+    }
+    const total = getTotalEstimatedIncome(period.projects, period.employees);
+    totalBlock.innerHTML = `
+      Total Estimated Income:
+      <span class="total-amount ${total >= 0 ? "positive-income" : "negative-income"}">${formatCurrency(total)}</span>
+    `;
   }
 
   function renderEmployeesTable() {
