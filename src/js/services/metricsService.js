@@ -47,11 +47,28 @@ function getProjectMetrics(project, employees) {
   };
 }
 
-function getEmployeeMetrics(employee) {
+function getEmployeeMetrics(employee, projects, employees) {
   const assignments = employee.assignments || [];
+  let estimatedPayment = 0;
+  let projectedIncome = 0;
+
+  if (assignments.length === 0) {
+    estimatedPayment = employee.salary * 0.5;
+  }
+
+  for (const assignment of assignments) {
+    estimatedPayment += employee.salary * Math.max(0.5, Number(assignment.capacity));
+    const project = projects.find((p) => p.id === assignment.projectId);
+    if (!project) continue;
+    const projectMetrics = getProjectMetrics(project, employees);
+    const assignmentMetrics = projectMetrics.assignments.find(
+      (item) => item.employee.id === employee.id,
+    );
+    if (assignmentMetrics) projectedIncome += assignmentMetrics.profit;
+  }
 
   const usedCapacity = assignments.reduce((sum, item) => sum + Number(item.capacity), 0);
-  return { usedCapacity };
+  return { estimatedPayment, projectedIncome, usedCapacity };
 }
 
 function getTotalEstimatedIncome(projects, employees) {

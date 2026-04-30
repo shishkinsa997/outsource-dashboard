@@ -77,14 +77,14 @@ function createTableModule(deps) {
         <td>${calculateAge(employee.dob)}</td>
         <td class="editable-position">${employee.position}</td>
         <td class="editable-salary">${formatCurrency(employee.salary)}</td>
-        <td>${formatCurrency(employee.salary)}</td>
+        <td>${formatCurrency(metrics.estimatedPayment)}</td>
         <td>
           <button class="show-details-btn">
             Show Assignments (${(employee.assignments || []).length})
             <span class="capacity-indicator">${toFixed(metrics.usedCapacity, 1)}/1.5</span>
           </button>
         </td>
-        <td></td>
+        <td class="${metrics.projectedIncome >= 0 ? "positive-income" : "negative-income"}">${formatCurrency(metrics.projectedIncome)}</td>
         <td class="action-buttons">
           <button class="availability-btn">Availability</button>
           <button class="assign-btn" ${metrics.usedCapacity >= 1.5 ? "disabled" : ""}>Assign</button>
