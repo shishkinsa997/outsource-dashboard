@@ -2,8 +2,10 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig(() => {
+  const isGhPages = process.env.DEPLOY_TARGET === 'gh-pages';
+
   return {
-    base: '/outsource-dashboard/',
+    base: isGhPages ? '/outsource-dashboard/' : '/',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
