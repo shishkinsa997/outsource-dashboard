@@ -1,14 +1,14 @@
-import { dom, state } from "./state/appState.js";
+import { dom, state, uiState } from "./state/appState.js";
 import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalEstimatedIncome } from "./services/metricsService.js";
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
-import { applySort, applyFilters, setSort, updateSortIcons } from "./modules/sortFilter.js";
-import { closePanels } from "./modules/ui.js";
+import { applyFilters, applySort, openFilterPopup, setSort, updateSortIcons } from "./modules/sortFilter.js";
+import { closeFilterPopup, closePanels } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
 
 const tableModule = createTableModule({
   applyFilters: (data, type) => applyFilters(data, type, getCurrentPeriodData),
   applySort: (data, type) =>
-    applySort(data, type),
+    applySort(data, type, getCurrentPeriodData, getEmployeeMetrics, getProjectMetrics),
   getCurrentPeriodData,
   getEmployeeMetrics,
   getProjectMetrics,
@@ -18,6 +18,7 @@ const tableModule = createTableModule({
 });
 
 function render() {
+  closeFilterPopup();
   dom.projectsContent.classList.toggle("hidden", state.activeTab !== "projects");
   dom.employeesContent.classList.toggle("hidden", state.activeTab !== "employees");
   dom.navProjects.classList.toggle("active", state.activeTab === "projects");
@@ -87,6 +88,25 @@ function initEvents() {
       const tableType = header.closest("table").id === "projects-table" ? "projects" : "employees";
       setSort(tableType, header.dataset.sort, () => render());
     });
+  });
+
+  document.querySelectorAll(".filter-icon").forEach((icon) => {
+    icon.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const header = icon.closest("th");
+      const tableType = header.closest("table").id === "projects-table" ? "projects" : "employees";
+      openFilterPopup(header, tableType, header.dataset.filter, () => render(), closeFilterPopup);
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      uiState.activeFilterPopup &&
+      !uiState.activeFilterPopup.contains(event.target) &&
+      !event.target.classList.contains("filter-icon")
+    ) {
+      closeFilterPopup();
+    }
   });
 
 }

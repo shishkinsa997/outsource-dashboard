@@ -1,4 +1,4 @@
-import { state } from "../state/appState.js";
+import { state, uiState } from "../state/appState.js";
 import { calculateAge } from "../utils/date.js";
 
 function applySort(data, type, getCurrentPeriodData, getEmployeeMetrics, getProjectMetrics) {
@@ -105,10 +105,47 @@ function updateSortIcons() {
   });
 }
 
+function openFilterPopup(header, type, field, render, closeFilterPopup) {
+  closeFilterPopup();
+
+  const popup = document.createElement("div");
+  popup.className = "filter-popup";
+  const currentValue = state.filters[type][field] || "";
+  const content = `<input class="filter-input" type="text" value="${currentValue}" placeholder="Filter..." />`;
+
+  popup.innerHTML = `
+    ${content}
+    <button class="accept-filter">Apply</button>
+    <button class="cancel-filter">Cancel</button>
+  `;
+
+  document.body.append(popup);
+  const rect = header.getBoundingClientRect();
+  popup.style.top = `${rect.bottom + window.scrollY + 4}px`;
+  popup.style.left = `${rect.left + window.scrollX}px`;
+  uiState.activeFilterPopup = popup;
+
+  const input = popup.querySelector(".filter-input");
+  const apply = () => {
+    const value = String(input.value || "").trim();
+    if (value) state.filters[type][field] = value;
+    else delete state.filters[type][field];
+    render();
+    closeFilterPopup();
+  };
+
+  popup.querySelector(".accept-filter").addEventListener("click", apply);
+  popup.querySelector(".cancel-filter").addEventListener("click", closeFilterPopup);
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") apply();
+  });
+  input.focus();
+}
 
 export {
   applySort,
   applyFilters,
   setSort,
   updateSortIcons,
+  openFilterPopup,
 };

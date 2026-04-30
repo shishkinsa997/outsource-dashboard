@@ -63,4 +63,8 @@ const dom = {
   currentMonthDisplay: document.getElementById("current-month-display"),
 };
 
-export { STORAGE_KEY, MONTH_NAMES, POSITIONS, WEEK_DAY_NAMES, now, state, dom };
+const uiState = {
+  activeFilterPopup: null,
+};
+
+export { STORAGE_KEY, MONTH_NAMES, POSITIONS, WEEK_DAY_NAMES, now, state, dom, uiState };
