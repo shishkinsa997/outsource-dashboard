@@ -91,6 +91,12 @@ function createTableModule(deps) {
           <button class="delete-btn">Delete</button>
         </td>
       `;
+      row.querySelector(".delete-btn").addEventListener("click", () => {
+        if (!window.confirm(`Delete employee "${employee.name} ${employee.surname}"?`)) return;
+        period.employees = period.employees.filter((item) => item.id !== employee.id);
+        saveData();
+        render();
+      });
 
       dom.employeesTableBody.append(row);
     });
