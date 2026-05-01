@@ -12,7 +12,66 @@ function createTableModule(deps) {
     getTotalEstimatedIncome,
     saveData,
     render,
+    openDetailsPopup,
   } = deps;
+
+  function showProjectsPopup(project) {
+    const period = getCurrentPeriodData();
+    const metrics = getProjectMetrics(project, period.employees);
+    const rows = [...metrics.assignments].sort((a, b) =>
+      `${a.employee.name} ${a.employee.surname}`.localeCompare(`${b.employee.name} ${b.employee.surname}`),
+    );
+
+    openDetailsPopup(`Project Employees - ${project.projectName}`, (content) => {
+      if (!rows.length) {
+        content.innerHTML = "<p>No employees assigned to this project.</p>";
+        return;
+      }
+
+      const table = document.createElement("table");
+      table.className = "details-table";
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Employee</th>
+            <th>Capacity</th>
+            <th>Fit</th>
+            <th>Vacation Days</th>
+            <th>Effective Capacity</th>
+            <th>Revenue</th>
+            <th>Cost</th>
+            <th>Profit</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+
+      const tbody = table.querySelector("tbody");
+      rows.forEach((item) => {
+        const row = document.createElement("tr");
+        const vacationDays = (item.employee.vacationDays || []).length;
+        row.innerHTML = `
+          <td><a href="#" class="employee-link">${item.employee.name} ${item.employee.surname}</a></td>
+          <td>${toFixed(item.assignment.capacity, 2)}</td>
+          <td>${toFixed(item.assignment.fit, 2)}</td>
+          <td>${vacationDays}</td>
+          <td>${toFixed(item.effectiveCapacity, 3)}</td>
+          <td>${formatCurrency(item.revenue)}</td>
+          <td>${formatCurrency(item.cost)}</td>
+          <td class="${item.profit >= 0 ? "positive-income" : "negative-income"}">${formatCurrency(item.profit)}</td>
+          <td>
+            <button class="edit-assignment-btn">Edit</button>
+            <button class="delete-btn">Unassign</button>
+          </td>
+        `;
+
+        tbody.append(row);
+      });
+
+      content.append(table);
+    });
+  }
 
   function renderProjectsTable() {
     const period = getCurrentPeriodData();
@@ -34,6 +93,9 @@ function createTableModule(deps) {
         <td><button class="delete-btn">Delete</button></td>
       `;
 
+      row.querySelector(".show-details-btn").addEventListener("click", () => {
+        showProjectsPopup(project);
+      });
       row.querySelector(".delete-btn").addEventListener("click", () => {
         if (!window.confirm(`Delete project "${project.projectName}"?`)) return;
         period.projects = period.projects.filter((item) => item.id !== project.id);
