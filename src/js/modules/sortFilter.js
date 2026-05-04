@@ -1,4 +1,4 @@
-import { POSITIONS, state, uiState } from "../state/appState.js";
+import { POSITIONS, dom, state, uiState } from "../state/appState.js";
 import { calculateAge } from "../utils/date.js";
 
 function applySort(data, type, getCurrentPeriodData, getEmployeeMetrics, getProjectMetrics) {
@@ -105,6 +105,42 @@ function updateSortIcons() {
   });
 }
 
+function renderFilterChips(render) {
+  const mappings = [
+    { type: "projects", container: dom.projectFiltersContainer },
+    { type: "employees", container: dom.employeeFiltersContainer },
+  ];
+
+  mappings.forEach(({ type, container }) => {
+    container.innerHTML = "";
+    const entries = Object.entries(state.filters[type]);
+    entries.forEach(([key, value]) => {
+      const chip = document.createElement("div");
+      chip.className = "filter-chip";
+      chip.innerHTML = `
+        <span class="chip-label">${key}: ${value}</span>
+        <span class="chip-remove">×</span>
+      `;
+      chip.querySelector(".chip-remove").addEventListener("click", () => {
+        delete state.filters[type][key];
+        render();
+      });
+      container.append(chip);
+    });
+
+    if (entries.length >= 2) {
+      const clearChip = document.createElement("div");
+      clearChip.className = "filter-chip clear-all-chip";
+      clearChip.textContent = "Clear Filters";
+      clearChip.addEventListener("click", () => {
+        state.filters[type] = {};
+        render();
+      });
+      container.append(clearChip);
+    }
+  });
+}
+
 function openFilterPopup(header, type, field, render, closeFilterPopup) {
   closeFilterPopup();
 
@@ -154,5 +190,6 @@ export {
   applyFilters,
   setSort,
   updateSortIcons,
+  renderFilterChips,
   openFilterPopup,
 };

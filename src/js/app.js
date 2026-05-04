@@ -2,7 +2,7 @@ import { dom, state, uiState } from "./state/appState.js";
 import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalEstimatedIncome } from "./services/metricsService.js";
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
 import { validateEmployeeForm, validateProjectForm } from "./modules/forms.js";
-import { applyFilters, applySort, openFilterPopup, setSort, updateSortIcons } from "./modules/sortFilter.js";
+import { applyFilters, applySort, openFilterPopup, renderFilterChips, setSort, updateSortIcons } from "./modules/sortFilter.js";
 import { closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
 
@@ -37,6 +37,7 @@ function render() {
   dom.navEmployees.classList.toggle("active", state.activeTab === "employees");
   tableModule.renderProjectsTable();
   tableModule.renderEmployeesTable();
+  renderFilterChips(() => render());
   updateSortIcons();
 }
 
