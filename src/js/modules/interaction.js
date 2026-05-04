@@ -1,6 +1,6 @@
-import { uiState } from "../state/appState.js";
+import { MONTH_NAMES, WEEK_DAY_NAMES, now, uiState, state } from "../state/appState.js";
 import { formatCurrency, toFixed } from "../utils/format.js";
-import { getVacationCoefficient } from "../utils/date.js";
+import { countWorkingDays, getVacationCoefficient, isWeekend } from "../utils/date.js";
 
 function showUnassignPopup(employee, project, assignment, deps) {
   const { getCurrentPeriodData, getProjectMetrics, onConfirm } = deps;
@@ -273,4 +273,93 @@ function showEditAssignmentPopup(employee, project, deps) {
   setTimeout(() => fakeAnchor.remove(), 0);
 }
 
-export { showUnassignPopup, openAssignmentPopup, showEditAssignmentPopup };
+function openCalendarPopup(employee, deps) {
+  const { updateEmployee } = deps;
+  const popup = document.createElement("div");
+  popup.className = "calendar-popup";
+  const daysInMonth = new Date(state.currentYear, state.currentMonth + 1, 0).getDate();
+  const firstDayIndex = new Date(state.currentYear, state.currentMonth, 1).getDay();
+  const isCurrentPeriod =
+    state.currentYear === now.getFullYear() && state.currentMonth === now.getMonth();
+
+  let selectedDays = [...(employee.vacationDays || [])];
+
+  function renderCalendar() {
+    const totalWorking = countWorkingDays(state.currentYear, state.currentMonth);
+    const vacationWorking = selectedDays.filter(
+      (day) => !isWeekend(state.currentYear, state.currentMonth, day),
+    ).length;
+    const currentWorking = totalWorking - vacationWorking;
+
+    popup.innerHTML = `
+      <div class="calendar-header">
+        <h3>${employee.name} ${employee.surname}</h3>
+        <h4>${MONTH_NAMES[state.currentMonth]} ${state.currentYear}</h4>
+        <button class="close-calendar-btn">×</button>
+      </div>
+      <div class="calendar-grid"></div>
+      <div class="calendar-info">
+        <div class="working-days-info">Working Days: <strong>${currentWorking}/${totalWorking} days</strong></div>
+        <div class="chosen-days-section">
+          <span class="chosen-days-label">Vacation Days:</span>
+          <span class="chosen-days-display">${selectedDays}</span>
+          <button class="set-vacation-btn">Set Vacation</button>
+        </div>
+      </div>
+    `;
+
+    const grid = popup.querySelector(".calendar-grid");
+    WEEK_DAY_NAMES.forEach((name) => {
+      const dayHeader = document.createElement("div");
+      dayHeader.className = "calendar-day-header";
+      dayHeader.textContent = name;
+      grid.append(dayHeader);
+    });
+
+    for (let index = 0; index < firstDayIndex; index += 1) {
+      const empty = document.createElement("div");
+      empty.className = "calendar-day empty";
+      grid.append(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const dayElement = document.createElement("div");
+      const weekend = isWeekend(state.currentYear, state.currentMonth, day);
+      const today = isCurrentPeriod && day === now.getDate() ? "today" : "";
+      const selected = selectedDays.includes(day) ? "selected vacation" : "";
+      dayElement.className = `calendar-day ${weekend ? "weekend" : ""} ${today} ${selected}`.trim();
+      dayElement.textContent = String(day);
+      dayElement.addEventListener("click", () => {
+        if (selectedDays.includes(day)) {
+          selectedDays = selectedDays.filter((value) => value !== day);
+        } else {
+          selectedDays.push(day);
+        }
+        renderCalendar();
+      });
+      grid.append(dayElement);
+    }
+
+    popup.querySelector(".close-calendar-btn").addEventListener("click", close);
+    popup.querySelector(".set-vacation-btn").addEventListener("click", () => {
+      updateEmployee(employee.id, (target) => ({
+        ...target,
+        vacationDays: [...new Set(selectedDays)].sort((a, b) => a - b),
+      }));
+      close();
+    });
+  }
+
+  const close = () => {
+    popup.remove();
+  };
+
+  renderCalendar();
+  popup.addEventListener("click", (event) => event.stopPropagation());
+  document.body.append(popup);
+  popup.style.top = "50%";
+  popup.style.left = "50%";
+  popup.style.transform = "translate(-50%, -50%)";
+}
+
+export { showUnassignPopup, openAssignmentPopup, showEditAssignmentPopup, openCalendarPopup };
