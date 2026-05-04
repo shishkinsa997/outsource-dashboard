@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --emptyOutDir",
+    "build:gh-pages": "cross-env DEPLOY_TARGET=gh-pages vite build --emptyOutDir",
     "preview": "vite preview",
-    "deploy": "cross-env DEPLOY_TARGET=gh-pages vite build --emptyOutDir && gh-pages -d build --dest outsource-dashboard",
+    "deploy": "npm run build:gh-pages && gh-pages -d build",
     "lint": "eslint src",
     "format": "prettier --write src",
     "prepare": "husky"
