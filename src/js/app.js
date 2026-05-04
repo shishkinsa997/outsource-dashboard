@@ -1,6 +1,7 @@
 import { dom, state, uiState } from "./state/appState.js";
 import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalEstimatedIncome } from "./services/metricsService.js";
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
+import { validateEmployeeForm, validateProjectForm } from "./modules/forms.js";
 import { applyFilters, applySort, openFilterPopup, setSort, updateSortIcons } from "./modules/sortFilter.js";
 import { closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
@@ -76,10 +77,12 @@ function initEvents() {
   });
   dom.cancelEmployeeBtn.addEventListener("click", () => {
     dom.addEmployeeForm.reset();
+    validateEmployeeForm();
     closePanels();
   });
   dom.cancelProjectBtn.addEventListener("click", () => {
     dom.addProjectForm.reset();
+    validateProjectForm();
     closePanels();
   });
 
@@ -115,6 +118,8 @@ function initEvents() {
 function initDashboard() {
   loadData();
   initEvents();
+  validateEmployeeForm();
+  validateProjectForm();
   render();
 }
 
