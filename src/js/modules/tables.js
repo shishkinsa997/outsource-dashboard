@@ -14,6 +14,7 @@ function createTableModule(deps) {
     render,
     openDetailsPopup,
     showUnassignPopup,
+    openAssignmentPopup,
     updateEmployee,
   } = deps;
 
@@ -246,6 +247,9 @@ function createTableModule(deps) {
 
       row.querySelector(".show-details-btn").addEventListener("click", () => {
         showEmployeesPopup(employee);
+      });
+      row.querySelector(".assign-btn").addEventListener("click", (event) => {
+        openAssignmentPopup(employee, event.currentTarget);
       });
       row.querySelector(".delete-btn").addEventListener("click", () => {
         if (!window.confirm(`Delete employee "${employee.name} ${employee.surname}"?`)) return;

@@ -3,9 +3,9 @@ import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalE
 import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
 import { validateEmployeeForm, validateProjectForm } from "./modules/forms.js";
 import { applyFilters, applySort, openFilterPopup, renderFilterChips, setSort, updateSortIcons } from "./modules/sortFilter.js";
-import { closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
+import { closeAssignmentPopup, closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
-import { showUnassignPopup } from "./modules/interaction.js";
+import { openAssignmentPopup, showUnassignPopup } from "./modules/interaction.js";
 
 function updateEmployee(employeeId, updater) {
   const period = getCurrentPeriodData();
@@ -14,6 +14,16 @@ function updateEmployee(employeeId, updater) {
   period.employees[index] = updater(period.employees[index]);
   saveData();
   render();
+}
+
+function assignmentPopupHandler(employee, anchorButton, options = {}) {
+  openAssignmentPopup(employee, anchorButton, options, {
+    closeAssignmentPopup,
+    getCurrentPeriodData,
+    getEmployeeAssignment,
+    getProjectMetrics,
+    updateEmployee,
+  });
 }
 
 const tableModule = createTableModule({
@@ -28,6 +38,8 @@ const tableModule = createTableModule({
   render: () => render(),
   openDetailsPopup,
   showUnassignPopup,
+  openAssignmentPopup: (employee, anchorButton) =>
+    assignmentPopupHandler(employee, anchorButton),
   updateEmployee,
 });
 

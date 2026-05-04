@@ -65,6 +65,7 @@ const dom = {
 
 const uiState = {
   activeFilterPopup: null,
+  activeAssignmentPopup: null,
 };
 
 export { STORAGE_KEY, MONTH_NAMES, POSITIONS, WEEK_DAY_NAMES, now, state, dom, uiState };

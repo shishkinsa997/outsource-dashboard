@@ -6,6 +6,12 @@ function closeFilterPopup() {
     uiState.activeFilterPopup = null;
   }
 }
+function closeAssignmentPopup() {
+  if (uiState.activeAssignmentPopup) {
+    uiState.activeAssignmentPopup.cleanup();
+    uiState.activeAssignmentPopup = null;
+  }
+}
 
 function closePanels() {
   dom.addEmployeePanel.classList.remove("open");
@@ -37,6 +43,7 @@ function openDetailsPopup(title, buildContent) {
 
 export {
   closeFilterPopup,
+  closeAssignmentPopup,
   closePanels,
   openDetailsPopup,
 };
