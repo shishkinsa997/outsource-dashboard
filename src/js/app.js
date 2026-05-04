@@ -86,6 +86,54 @@ function initEvents() {
     closePanels();
   });
 
+  ["input", "blur"].forEach((eventName) => {
+    dom.addEmployeeForm.addEventListener(eventName, validateEmployeeForm, true);
+    dom.addProjectForm.addEventListener(eventName, validateProjectForm, true);
+  });
+
+  dom.addEmployeeForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    validateEmployeeForm();
+    if (dom.employeeSubmitBtn.disabled) return;
+    const period = getCurrentPeriodData();
+    const formData = new FormData(dom.addEmployeeForm);
+    period.employees.push({
+      id: Date.now(),
+      name: String(formData.get("name")).trim(),
+      surname: String(formData.get("surname")).trim(),
+      dob: String(formData.get("dob")),
+      position: String(formData.get("position")),
+      salary: Number(formData.get("salary")),
+      assignments: [],
+      vacationDays: [],
+    });
+    saveData();
+    dom.addEmployeeForm.reset();
+    validateEmployeeForm();
+    closePanels();
+    render();
+  });
+
+  dom.addProjectForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    validateProjectForm();
+    if (dom.projectSubmitBtn.disabled) return;
+    const period = getCurrentPeriodData();
+    const formData = new FormData(dom.addProjectForm);
+    period.projects.push({
+      id: Date.now(),
+      projectName: String(formData.get("project-name")).trim(),
+      companyName: String(formData.get("company-name")).trim(),
+      budget: Number(formData.get("project-budget")),
+      employeeCapacity: Number(formData.get("employee-capacity")),
+    });
+    saveData();
+    dom.addProjectForm.reset();
+    validateProjectForm();
+    closePanels();
+    render();
+  });
+
   document.querySelectorAll("th.sortable").forEach((header) => {
     header.addEventListener("click", (event) => {
       if (event.target.classList.contains("filter-icon")) return;
