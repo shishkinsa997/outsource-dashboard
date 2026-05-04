@@ -1,6 +1,6 @@
 import { MONTH_NAMES, WEEK_DAY_NAMES, now, uiState, state } from "../state/appState.js";
 import { formatCurrency, toFixed } from "../utils/format.js";
-import { countWorkingDays, getVacationCoefficient, isWeekend } from "../utils/date.js";
+import { countWorkingDays, formatVacationRanges, getVacationCoefficient, isWeekend } from "../utils/date.js";
 
 function showUnassignPopup(employee, project, assignment, deps) {
   const { getCurrentPeriodData, getProjectMetrics, onConfirm } = deps;
@@ -302,7 +302,7 @@ function openCalendarPopup(employee, deps) {
         <div class="working-days-info">Working Days: <strong>${currentWorking}/${totalWorking} days</strong></div>
         <div class="chosen-days-section">
           <span class="chosen-days-label">Vacation Days:</span>
-          <span class="chosen-days-display">${selectedDays}</span>
+          <span class="chosen-days-display">${formatVacationRanges(selectedDays)}</span>
           <button class="set-vacation-btn">Set Vacation</button>
         </div>
       </div>

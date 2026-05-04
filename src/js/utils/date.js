@@ -34,4 +34,37 @@ function getVacationCoefficient(employee) {
   return (totalWorkingDays - vacationWorkingDays) / totalWorkingDays;
 }
 
-export { isWeekend, countWorkingDays, calculateAge, getVacationCoefficient };
+function formatVacationRanges(days) {
+  if (!days.length) return "None";
+  const sorted = [...new Set(days)].sort((a, b) => a - b);
+  const ranges = [];
+  let start = sorted[0];
+  let prev = sorted[0];
+  const canJoinThroughWeekend = (from, to) => {
+    for (let d = from + 1; d < to; d += 1) {
+      if (!isWeekend(state.currentYear, state.currentMonth, d)) return false;
+    }
+    return true;
+  };
+
+  for (let i = 1; i <= sorted.length; i += 1) {
+    const current = sorted[i];
+    if (current && (current === prev + 1 || canJoinThroughWeekend(prev, current))) {
+      prev = current;
+      continue;
+    }
+    ranges.push([start, prev]);
+    start = current;
+    prev = current;
+  }
+
+  return ranges
+    .map(([s, e]) => {
+      const left = `${String(s).padStart(2, "0")}.${String(state.currentMonth + 1).padStart(2, "0")}`;
+      const right = `${String(e).padStart(2, "0")}.${String(state.currentMonth + 1).padStart(2, "0")}`;
+      return s === e ? left : `${left}-${right}`;
+    })
+    .join(", ");
+}
+
+export { isWeekend, countWorkingDays, calculateAge, getVacationCoefficient, formatVacationRanges };
