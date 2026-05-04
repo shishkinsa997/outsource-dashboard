@@ -14,7 +14,6 @@ Employee & Project Dashboard is a frontend management app for tracking:
 The app uses monthly snapshots, so each month has its own independent data in localStorage.
 
 ## Deploy
-- [Outsource Dashboard GitHub](https://shishkinsa997.github.io/outsource-dashboard/)
 - [Outsource Dashboard Vercel](https://outsource-dashboard-rose.vercel.app/)
 
 ## Features
