@@ -5,7 +5,7 @@ export default defineConfig(() => {
   const isGhPages = process.env.DEPLOY_TARGET === 'gh-pages';
 
   return {
-    base: isGhPages ? '/outsource-dashboard/' : '/',
+    base: isGhPages ? './' : '/',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
