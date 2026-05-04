@@ -13,6 +13,8 @@ function createTableModule(deps) {
     saveData,
     render,
     openDetailsPopup,
+    showUnassignPopup,
+    updateEmployee,
   } = deps;
 
   function showProjectsPopup(project) {
@@ -66,6 +68,18 @@ function createTableModule(deps) {
           </td>
         `;
 
+        row.querySelector(".delete-btn").addEventListener("click", () => {
+          showUnassignPopup(item.employee, project, item.assignment, {
+            getCurrentPeriodData,
+            getProjectMetrics,
+            onConfirm: () => {
+              updateEmployee(item.employee.id, (target) => ({
+                ...target,
+                assignments: target.assignments.filter((assignment) => assignment.projectId !== project.id),
+              }));
+            },
+          });
+        });
         tbody.append(row);
       });
 

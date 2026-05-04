@@ -5,6 +5,7 @@ import { validateEmployeeForm, validateProjectForm } from "./modules/forms.js";
 import { applyFilters, applySort, openFilterPopup, renderFilterChips, setSort, updateSortIcons } from "./modules/sortFilter.js";
 import { closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
+import { showUnassignPopup } from "./modules/interaction.js";
 
 function updateEmployee(employeeId, updater) {
   const period = getCurrentPeriodData();
@@ -26,6 +27,7 @@ const tableModule = createTableModule({
   saveData,
   render: () => render(),
   openDetailsPopup,
+  showUnassignPopup,
   updateEmployee,
 });
 
