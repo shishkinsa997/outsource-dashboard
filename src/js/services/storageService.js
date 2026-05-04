@@ -18,6 +18,26 @@ function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.monthlyData));
 }
 
+function normalizeMonthData(monthData) {
+  const normalized = deepClone(monthData || { employees: [], projects: [] });
+  normalized.projects = Array.isArray(normalized.projects) ? normalized.projects : [];
+  normalized.employees = Array.isArray(normalized.employees) ? normalized.employees : [];
+
+  normalized.projects = normalized.projects.map((project) => ({
+    ...project,
+    budget: Number(project.budget) || 0,
+    employeeCapacity: Number(project.employeeCapacity) || 0,
+  }));
+
+  normalized.employees = normalized.employees.map((employee) => ({
+    ...employee,
+    salary: Number(employee.salary) || 0,
+    assignments: Array.isArray(employee.assignments) ? employee.assignments : [],
+    vacationDays: Array.isArray(employee.vacationDays) ? employee.vacationDays : [],
+  }));
+
+  return normalized;
+}
 
 function loadData() {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -41,4 +61,4 @@ function loadData() {
   saveData();
 }
 
-export { toPeriodKey, getCurrentPeriodData, saveData, loadData };
+export { toPeriodKey, getCurrentPeriodData, saveData, normalizeMonthData, loadData };
