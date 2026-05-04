@@ -3,7 +3,7 @@ import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalE
 import { getCurrentPeriodData, loadData, normalizeMonthData, saveData, toPeriodKey } from "./services/storageService.js";
 import { validateEmployeeForm, validateProjectForm } from "./modules/forms.js";
 import { applyFilters, applySort, openFilterPopup, renderFilterChips, setSort, updateSortIcons } from "./modules/sortFilter.js";
-import { closeAssignmentPopup, closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
+import { closeAssignmentPopup, closeFilterPopup, closePanels, createBackdrop, openDetailsPopup } from "./modules/ui.js";
 import { closeSeedDataPopup, openSeedDataPopup } from "./modules/seedData.js";
 import { createTableModule } from "./modules/tables.js";
 import { openAssignmentPopup, openCalendarPopup, showEditAssignmentPopup, showUnassignPopup } from "./modules/interaction.js";
@@ -38,7 +38,7 @@ function editAssignmentHandler(employee, project) {
 }
 
 function calendarHandler(employee) {
-  openCalendarPopup(employee, { updateEmployee });
+  openCalendarPopup(employee, { createBackdrop, updateEmployee });
 }
 
 const tableModule = createTableModule({
