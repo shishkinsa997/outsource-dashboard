@@ -5,7 +5,7 @@ import { validateEmployeeForm, validateProjectForm } from "./modules/forms.js";
 import { applyFilters, applySort, openFilterPopup, renderFilterChips, setSort, updateSortIcons } from "./modules/sortFilter.js";
 import { closeAssignmentPopup, closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
-import { openAssignmentPopup, showUnassignPopup } from "./modules/interaction.js";
+import { openAssignmentPopup, showEditAssignmentPopup, showUnassignPopup } from "./modules/interaction.js";
 
 function updateEmployee(employeeId, updater) {
   const period = getCurrentPeriodData();
@@ -26,6 +26,16 @@ function assignmentPopupHandler(employee, anchorButton, options = {}) {
   });
 }
 
+function editAssignmentHandler(employee, project) {
+  showEditAssignmentPopup(employee, project, {
+    closeAssignmentPopup,
+    getCurrentPeriodData,
+    getEmployeeAssignment,
+    getProjectMetrics,
+    updateEmployee,
+  });
+}
+
 const tableModule = createTableModule({
   applyFilters: (data, type) => applyFilters(data, type, getCurrentPeriodData),
   applySort: (data, type) =>
@@ -38,6 +48,7 @@ const tableModule = createTableModule({
   render: () => render(),
   openDetailsPopup,
   showUnassignPopup,
+  showEditAssignmentPopup: editAssignmentHandler,
   openAssignmentPopup: (employee, anchorButton) =>
     assignmentPopupHandler(employee, anchorButton),
   updateEmployee,

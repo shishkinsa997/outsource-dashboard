@@ -75,7 +75,7 @@ function openAssignmentPopup(employee, anchorButton, options, deps) {
   popup.className = "assignment-popup";
   popup.innerHTML = `
     <div class="assignment-popup-content">
-      <h3>Assign Employee</h3>
+      <h3>${options.editMode ? "Edit Assignment" : "Assign Employee"}</h3>
       <div class="capacity-status">
         Current capacity: <strong class="target-capacity"></strong><br />
         Available capacity: <strong class="available-capacity"></strong>
@@ -98,7 +98,7 @@ function openAssignmentPopup(employee, anchorButton, options, deps) {
       <div class="validation-message"></div>
       <div class="popup-buttons">
         <button class="cancel-assignment">Cancel</button>
-        <button class="apply-assignment">Assign</button>
+        <button class="apply-assignment">${options.editMode ? "Save" : "Assign"}</button>
       </div>
     </div>
   `;
@@ -123,6 +123,28 @@ function openAssignmentPopup(employee, anchorButton, options, deps) {
   );
   targetCapacityEl.textContent = `${toFixed(currentUsedCapacity, 1)}/1.5`;
 
+  const editableProjectId = options.project?.id || null;
+  const currentAssignment = editableProjectId
+    ? getEmployeeAssignment(employee, editableProjectId)
+    : null;
+
+  const availableProjects = period.projects.filter((project) => {
+    if (options.editMode) return project.id === editableProjectId;
+    return !(employee.assignments || []).some((assignment) => assignment.projectId === project.id);
+  });
+
+  if (!availableProjects.length) {
+    projectSelect.innerHTML = '<option value="">No available projects</option>';
+    applyBtn.disabled = true;
+  } else {
+    projectSelect.innerHTML = availableProjects
+      .map((project) => `<option value="${project.id}">${project.projectName}</option>`)
+      .join("");
+  }
+
+  capacityInput.value = currentAssignment ? currentAssignment.capacity : 0.5;
+  fitInput.value = currentAssignment ? currentAssignment.fit : 1;
+
   function positionPopup() {
     const rect = anchorButton.getBoundingClientRect();
     popup.style.top = `${rect.bottom + 8}px`;
@@ -144,7 +166,9 @@ function openAssignmentPopup(employee, anchorButton, options, deps) {
     capacityValue.textContent = toFixed(selectedCapacity, 1);
     fitValue.textContent = toFixed(selectedFit, 1);
 
-    const capacityExcludingEdited = currentUsedCapacity;
+    const capacityExcludingEdited = options.editMode
+      ? currentUsedCapacity - Number(currentAssignment?.capacity || 0)
+      : currentUsedCapacity;
     const predictedEmployeeCapacity = capacityExcludingEdited + selectedCapacity;
     const available = Math.max(0, 1.5 - capacityExcludingEdited);
     availableCapacityEl.textContent = toFixed(available, 1);
@@ -184,7 +208,12 @@ function openAssignmentPopup(employee, anchorButton, options, deps) {
 
     const predictedProjectEffective =
       currentProjectLoad +
-      selectedCapacity * selectedFit * vacationCoefficient;
+      selectedCapacity * selectedFit * vacationCoefficient -
+      (options.editMode
+        ? Number(currentAssignment?.capacity || 0) *
+          Number(currentAssignment?.fit || 0) *
+          vacationCoefficient
+        : 0);
 
     if (predictedProjectEffective > selectedProject.employeeCapacity) {
       validationMessage.className = "validation-message warning";
@@ -232,4 +261,16 @@ function openAssignmentPopup(employee, anchorButton, options, deps) {
   };
 }
 
-export { showUnassignPopup, openAssignmentPopup };
+function showEditAssignmentPopup(employee, project, deps) {
+  const fakeAnchor = document.createElement("span");
+  fakeAnchor.style.position = "fixed";
+  fakeAnchor.style.top = "50%";
+  fakeAnchor.style.left = "50%";
+  fakeAnchor.style.width = "1px";
+  fakeAnchor.style.height = "1px";
+  document.body.append(fakeAnchor);
+  openAssignmentPopup(employee, fakeAnchor, { editMode: true, project }, deps);
+  setTimeout(() => fakeAnchor.remove(), 0);
+}
+
+export { showUnassignPopup, openAssignmentPopup, showEditAssignmentPopup };

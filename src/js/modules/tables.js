@@ -14,6 +14,7 @@ function createTableModule(deps) {
     render,
     openDetailsPopup,
     showUnassignPopup,
+    showEditAssignmentPopup,
     openAssignmentPopup,
     updateEmployee,
   } = deps;
@@ -25,7 +26,7 @@ function createTableModule(deps) {
       `${a.employee.name} ${a.employee.surname}`.localeCompare(`${b.employee.name} ${b.employee.surname}`),
     );
 
-    openDetailsPopup(`Project Employees - ${project.projectName}`, (content) => {
+    openDetailsPopup(`Project Employees - ${project.projectName}`, (content, closePopup) => {
       if (!rows.length) {
         content.innerHTML = "<p>No employees assigned to this project.</p>";
         return;
@@ -69,6 +70,10 @@ function createTableModule(deps) {
           </td>
         `;
 
+        row.querySelector(".edit-assignment-btn").addEventListener("click", () => {
+          showEditAssignmentPopup(item.employee, project);
+        });
+
         row.querySelector(".delete-btn").addEventListener("click", () => {
           showUnassignPopup(item.employee, project, item.assignment, {
             getCurrentPeriodData,
@@ -101,7 +106,7 @@ function createTableModule(deps) {
       })
       .filter(Boolean);
 
-    openDetailsPopup(`Assignments - ${employee.name} ${employee.surname}`, (content) => {
+    openDetailsPopup(`Assignments - ${employee.name} ${employee.surname}`, (content, closePopup) => {
       if (!displayRows.length) {
         content.innerHTML = "<p>This employee has no assignments.</p>";
         return;
@@ -144,6 +149,10 @@ function createTableModule(deps) {
             <button class="delete-btn">Unassign</button>
           </td>
         `;
+
+        row.querySelector(".edit-assignment-btn").addEventListener("click", () => {
+          showEditAssignmentPopup(employee, project);
+        });
 
         row.querySelector(".delete-btn").addEventListener("click", () => {
           showUnassignPopup(employee, project, assignment, {
