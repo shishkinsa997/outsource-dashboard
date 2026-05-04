@@ -20,7 +20,19 @@ function saveData() {
 
 
 function loadData() {
-  state.monthlyData = deepClone(seedData);
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      Object.entries(parsed).forEach(([key, value]) => {
+        state.monthlyData[key] = normalizeMonthData(value);
+      });
+    } catch {
+      state.monthlyData = deepClone(seedData);
+    }
+  } else {
+    state.monthlyData = deepClone(seedData);
+  }
 
   const currentKey = toPeriodKey();
   if (!state.monthlyData[currentKey]) {
