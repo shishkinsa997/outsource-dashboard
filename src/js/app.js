@@ -1,9 +1,10 @@
 import { dom, state, uiState } from "./state/appState.js";
 import { getEmployeeAssignment, getEmployeeMetrics, getProjectMetrics, getTotalEstimatedIncome } from "./services/metricsService.js";
-import { getCurrentPeriodData, loadData, saveData, toPeriodKey } from "./services/storageService.js";
+import { getCurrentPeriodData, loadData, normalizeMonthData, saveData, toPeriodKey } from "./services/storageService.js";
 import { validateEmployeeForm, validateProjectForm } from "./modules/forms.js";
 import { applyFilters, applySort, openFilterPopup, renderFilterChips, setSort, updateSortIcons } from "./modules/sortFilter.js";
 import { closeAssignmentPopup, closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
+import { closeSeedDataPopup, openSeedDataPopup } from "./modules/seedData.js";
 import { createTableModule } from "./modules/tables.js";
 import { openAssignmentPopup, openCalendarPopup, showEditAssignmentPopup, showUnassignPopup } from "./modules/interaction.js";
 
@@ -202,6 +203,17 @@ function initEvents() {
     }
   });
 
+  dom.seedDataBtn.addEventListener("click", () =>
+    openSeedDataPopup({
+      toPeriodKey,
+      normalizeMonthData,
+      getTotalEstimatedIncome,
+      saveData,
+      render,
+    }),
+  );
+  dom.seedDataBackdrop.addEventListener("click", closeSeedDataPopup);
+  dom.seedDataPopup.querySelector(".close-popup-btn").addEventListener("click", closeSeedDataPopup);
 }
 
 function initDashboard() {
