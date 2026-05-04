@@ -6,6 +6,15 @@ import { applyFilters, applySort, openFilterPopup, setSort, updateSortIcons } fr
 import { closeFilterPopup, closePanels, openDetailsPopup } from "./modules/ui.js";
 import { createTableModule } from "./modules/tables.js";
 
+function updateEmployee(employeeId, updater) {
+  const period = getCurrentPeriodData();
+  const index = period.employees.findIndex((employee) => employee.id === employeeId);
+  if (index === -1) return;
+  period.employees[index] = updater(period.employees[index]);
+  saveData();
+  render();
+}
+
 const tableModule = createTableModule({
   applyFilters: (data, type) => applyFilters(data, type, getCurrentPeriodData),
   applySort: (data, type) =>
@@ -17,6 +26,7 @@ const tableModule = createTableModule({
   saveData,
   render: () => render(),
   openDetailsPopup,
+  updateEmployee,
 });
 
 function render() {
