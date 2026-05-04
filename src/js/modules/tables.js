@@ -87,6 +87,82 @@ function createTableModule(deps) {
     });
   }
 
+  function showEmployeesPopup(employee) {
+    const period = getCurrentPeriodData();
+    const displayRows = [...(employee.assignments || [])]
+      .map((assignment) => {
+        const project = period.projects.find((item) => item.id === assignment.projectId);
+        if (!project) return null;
+        const metrics = getProjectMetrics(project, period.employees).assignments.find(
+          (item) => item.employee.id === employee.id,
+        );
+        return { assignment, project, metrics };
+      })
+      .filter(Boolean);
+
+    openDetailsPopup(`Assignments - ${employee.name} ${employee.surname}`, (content) => {
+      if (!displayRows.length) {
+        content.innerHTML = "<p>This employee has no assignments.</p>";
+        return;
+      }
+
+      const table = document.createElement("table");
+      table.className = "details-table";
+      table.innerHTML = `
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Capacity</th>
+            <th>Fit</th>
+            <th>Vacation Days</th>
+            <th>Effective Capacity</th>
+            <th>Revenue</th>
+            <th>Cost</th>
+            <th>Profit</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      `;
+
+      const tbody = table.querySelector("tbody");
+      displayRows.forEach(({ assignment, project, metrics }) => {
+        const row = document.createElement("tr");
+        const vacationDays = (employee.vacationDays || []).length;
+        row.innerHTML = `
+          <td><a href="#" class="project-link">${project.projectName}</a></td>
+          <td>${toFixed(assignment.capacity, 2)}</td>
+          <td>${toFixed(assignment.fit, 2)}</td>
+          <td>${vacationDays}</td>
+          <td>${toFixed(metrics.effectiveCapacity, 3)}</td>
+          <td>${formatCurrency(metrics.revenue)}</td>
+          <td>${formatCurrency(metrics.cost)}</td>
+          <td class="${metrics.profit >= 0 ? "positive-income" : "negative-income"}">${formatCurrency(metrics.profit)}</td>
+          <td>
+            <button class="edit-assignment-btn">Edit</button>
+            <button class="delete-btn">Unassign</button>
+          </td>
+        `;
+
+        row.querySelector(".delete-btn").addEventListener("click", () => {
+          showUnassignPopup(employee, project, assignment, {
+            getCurrentPeriodData,
+            getProjectMetrics,
+            onConfirm: () => {
+              updateEmployee(employee.id, (target) => ({
+                ...target,
+                assignments: target.assignments.filter((item) => item.projectId !== project.id),
+              }));
+            },
+          });
+        });
+        tbody.append(row);
+      });
+
+      content.append(table);
+    });
+  }
+
   function renderProjectsTable() {
     const period = getCurrentPeriodData();
     const filtered = applyFilters(period.projects, "projects");
@@ -167,6 +243,10 @@ function createTableModule(deps) {
           <button class="delete-btn">Delete</button>
         </td>
       `;
+
+      row.querySelector(".show-details-btn").addEventListener("click", () => {
+        showEmployeesPopup(employee);
+      });
       row.querySelector(".delete-btn").addEventListener("click", () => {
         if (!window.confirm(`Delete employee "${employee.name} ${employee.surname}"?`)) return;
         period.employees = period.employees.filter((item) => item.id !== employee.id);
