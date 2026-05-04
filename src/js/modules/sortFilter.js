@@ -1,4 +1,4 @@
-import { state, uiState } from "../state/appState.js";
+import { POSITIONS, state, uiState } from "../state/appState.js";
 import { calculateAge } from "../utils/date.js";
 
 function applySort(data, type, getCurrentPeriodData, getEmployeeMetrics, getProjectMetrics) {
@@ -111,7 +111,13 @@ function openFilterPopup(header, type, field, render, closeFilterPopup) {
   const popup = document.createElement("div");
   popup.className = "filter-popup";
   const currentValue = state.filters[type][field] || "";
-  const content = `<input class="filter-input" type="text" value="${currentValue}" placeholder="Filter..." />`;
+  const isPosition = field === "position";
+  const content = isPosition
+    ? `<select class="filter-input">
+        <option value="">All</option>
+        ${POSITIONS.map((position) => `<option value="${position}" ${currentValue === position ? "selected" : ""}>${position}</option>`).join("")}
+       </select>`
+    : `<input class="filter-input" type="text" value="${currentValue}" placeholder="Filter..." />`;
 
   popup.innerHTML = `
     ${content}
@@ -139,7 +145,8 @@ function openFilterPopup(header, type, field, render, closeFilterPopup) {
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") apply();
   });
-  input.focus();
+  if (isPosition) input.addEventListener("change", apply);
+  else input.focus();
 }
 
 export {
